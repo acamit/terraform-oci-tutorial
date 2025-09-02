@@ -1,27 +1,29 @@
-locals {
-  name_suffix = "${var.resource_tags["project"]}-${var.resource_tags["environment"]}"
-}
-
 terraform {
-  required_providers {
-    oci = {
-      source  = "oracle/oci"
-      version = "7.16.0"
+    required_providers {
+        oci = {
+        source  = "oracle/oci"
+        version = "7.16.0"
+        }
     }
-  }
 }
 
 provider "oci" {
-  region              = var.region
-  auth                = "SecurityToken"
-  config_file_profile = "learn-terraform"
+    region              = var.region
+    auth                = "SecurityToken"
+    config_file_profile = "amitchawla"
+    # Explicitly set these to ensure no fallback to API key auth
+    tenancy_ocid        = null
+    user_ocid           = null
+    fingerprint         = null
+    private_key_path    = null
+
 }
 
 resource "oci_core_vcn" "internal" {
-  dns_label      = "internal"
-  cidr_block     = "172.16.0.0/20"
-  compartment_id = var.compartment_id
-  display_name   = "DEV Test VCN A"
+    dns_label      = "internal"
+    cidr_block     = "172.16.0.0/20"
+    compartment_id = var.compartment_id
+    display_name   = "DEV Test VCN A"
 }
 
 resource "oci_core_subnet" "dev" {
@@ -31,19 +33,7 @@ resource "oci_core_subnet" "dev" {
     display_name               = "Dev subnet"
     prohibit_public_ip_on_vnic = true
     dns_label                  = "dev"
-  }
-
-resource "aws_instance" "app" {
-    depends_on =  [module.vpc]
-    count = var.instances_per_subnet * 
 }
-
- module "app_security_group" {
-   source  = "terraform-aws-modules/security-group/aws//modules/web"
-   version = "3.17.0"
-
-   name        = "web-sg-${local.name_suffix}"
- }
 
 
 

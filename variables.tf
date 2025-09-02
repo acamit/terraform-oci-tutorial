@@ -8,3 +8,11 @@ variable "region" {
     type = string
     default = "us-ashburn-1"
 }
+
+
+variable "sensitive" {
+    description = "region where you have OCI tenancy"
+    type = string
+    default = "us-ashburn-1"
+    sensitive = true
+}

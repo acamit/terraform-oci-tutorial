@@ -1,3 +1,7 @@
+locals {
+  name_suffix = "${var.resource_tags["project"]}-${var.resource_tags["environment"]}"
+}
+
 terraform {
   required_providers {
     oci = {
@@ -29,7 +33,17 @@ resource "oci_core_subnet" "dev" {
     dns_label                  = "dev"
   }
 
+resource "aws_instance" "app" {
+    depends_on =  [module.vpc]
+    count = var.instances_per_subnet * 
+}
 
+ module "app_security_group" {
+   source  = "terraform-aws-modules/security-group/aws//modules/web"
+   version = "3.17.0"
+
+   name        = "web-sg-${local.name_suffix}"
+ }
 
 
 
